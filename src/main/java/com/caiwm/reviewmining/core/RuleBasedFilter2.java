@@ -1,0 +1,88 @@
+package com.caiwm.reviewmining.core;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import com.caiwm.reviewmining.beans.Item;
+import com.caiwm.reviewmining.beans.Sentence;
+import com.caiwm.reviewmining.beans.Word;
+import com.caiwm.reviewmining.common.FileContant;
+import com.caiwm.reviewmining.common.FileObjectProvider;
+
+public class RuleBasedFilter2 {
+
+	static int searchRegion = 5;
+	
+	private static Set<Item> filteredFeature = new HashSet<Item>();
+
+	public static Set<Item> getFilteredFeature() {
+		return filteredFeature;
+	}
+
+	public static void filterBySentiment(Set<Item> items) {
+		List<Sentence> sentences = FileObjectProvider.getDocumentsFromFile(null, false);
+		int threshole = 12;
+		for (Item item : items) {
+			int count = 0;
+			String element = item.getElementsString();
+			Set<Integer> sentenceNo = item.getSentenceNo();
+			for (int no : sentenceNo) {
+				Sentence sentence = sentences.get(no);
+				List<Word> words = sentence.getWords();
+				int i = sentence.findIndexOfWordContent(element);
+				boolean left = searchLeft(i, words);
+				boolean right = searchRight(i, words);
+				if (left || right) {
+					count++;
+				}
+			}
+			if (count >= threshole) {
+				filteredFeature.add(item);
+			}
+		}
+		save2File();
+	}
+
+	private static boolean searchLeft(int i, List<Word> words) {
+		for (int j = i - 1; j > 0 && j > i - searchRegion; j--) {
+			if (words.get(j).getPos().equals("a")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean searchRight(int i, List<Word> words) {
+		for (int j = i + 1; j < words.size() && j < i + searchRegion; j++) {
+			if (words.get(j).getPos().equals("a")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static void save2File() {
+		String fileName = FileContant.RESULT_FILTER_FILE;
+		Iterator<Item> iterator = filteredFeature.iterator();
+		File result = new File(fileName);
+		try {
+			FileWriter fw = new FileWriter(result);
+			while (iterator.hasNext()) {
+				Item item = iterator.next();
+				String element = item.getElementsString();
+				String sentenceNo = item.getSentenceNoString();
+				String line = element + "###" + sentenceNo + "\n";
+				fw.write(line);
+				fw.flush();
+			}
+			fw.close();
+		} catch (IOException e) {
+			throw new RuntimeException("没有找到此文件...");
+		}
+	}
+}
