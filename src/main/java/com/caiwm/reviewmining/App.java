@@ -19,53 +19,51 @@ import com.caiwm.reviewmining.core.AprioriParameters;
 import com.caiwm.reviewmining.core.Evaluate;
 import com.caiwm.reviewmining.core.OpinionMine2;
 import com.caiwm.reviewmining.core.RuleBasedFilter;
-import com.caiwm.reviewmining.core.RuleBasedFilter2;
 import com.caiwm.reviewmining.core.SentiAnalysis;
 
 public class App {
 	public static void main(String[] args) {
-		
-		//iphone6
-		//mi4
-		//samsungS6
-		FileContant.setProduct("mi4");
-		
-		//利用Apriori算法初步挖掘特征，得到特征集F1
+
+		// iphone6
+		// mi4
+		// samsungS6
+		FileContant.setProduct("samsungS6");
+
+		// 利用Apriori算法初步挖掘特征，得到特征集F1
 		AprioriParameters parameters = new AprioriParameters();
-		parameters.setUp(0.006F);
+		parameters.setUp(0.005F);
 		Apriori apriori = new Apriori(parameters);
 		apriori.genFeature();
-		
-		//遍历F1中的每一个项，查找该项所在的所有句子；
-		//如果该项在句子中的前后有形容词修饰，则可以确定为产品特征
+
+		// 遍历F1中的每一个项，查找该项所在的所有句子；
+		// 如果该项在句子中的前后有形容词修饰，则可以确定为产品特征
 		Set<Item> items = FileObjectProvider.readFile2ItemSet(FileContant.RESULT_FEATURE_FILE);
 		transform2New(items);
-		
+
 		RuleBasedFilter.filterBySentiment(items);
 		System.out.println("基于规则过滤后的特征集：" + RuleBasedFilter.getFilteredFeature().size());
 		Set<Item> feature = RuleBasedFilter.getFilteredFeature();
 		System.out.println(feature);
-		
+
 		Set<String> result = new HashSet<String>();
 		for (Item item : feature) {
 			result.add(item.getElementsString());
 		}
 		Set<String> manual = FileObjectProvider.getManual();
 		Evaluate.evaluateFeatureMining(result, manual);
-		
+
 		OpinionMine2.mineOpinion(feature);
-		
+
 		Map<String, Set<Integer>> featureOpinion = OpinionMine2.getFeatureOpnion();
 		System.out.println(featureOpinion);
 		System.out.println(featureOpinion.size());
 		createInputFile(featureOpinion);
-		
-		
+
 		Set<FeatureOpinion> featureOpinions = SentiAnalysis.classify(featureOpinion);
 		SentiAnalysis.calculate(featureOpinions);
 	}
-	
-	private static void createInputFile(Map<String, Set<Integer>> featureOpinion){
+
+	private static void createInputFile(Map<String, Set<Integer>> featureOpinion) {
 		String inputFile = FileContant.RESULT_SIMRANK_INPUT_FILE;
 		File file = new File(inputFile);
 		try {
@@ -80,11 +78,10 @@ public class App {
 			}
 			fw.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static void transform2New(Set<Item> items) {
 		String wsFileName = FileContant.WS_SENTENCE_FILE;
 		List<Sentence> sentences = FileObjectProvider.getSentencesFromFile(wsFileName);

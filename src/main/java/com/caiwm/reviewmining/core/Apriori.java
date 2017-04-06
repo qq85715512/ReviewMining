@@ -65,18 +65,18 @@ public class Apriori {
 		feature.addAll(candidate1Item);
 		feature.addAll(candidate2Item);
 //		feature.addAll(candidate3Item);
-		System.out.println("候选1项集组成的特征：" + candidate1Item.size());
-		System.out.println(candidate1Item);
-		System.out.println();
-		System.out.println("候选2项集组成的特征：" + candidate2Item.size());
-		System.out.println(candidate2Item);
-		System.out.println();
-		System.out.println("整合候选1项集和候选2项集之后的特征集：" + feature.size());
-		System.out.println(feature);
-		System.out.println();
+//		System.out.println("候选1项集组成的特征：" + candidate1Item.size());
+//		System.out.println(candidate1Item);
+//		System.out.println();
+//		System.out.println("候选2项集组成的特征：" + candidate2Item.size());
+//		System.out.println(candidate2Item);
+//		System.out.println();
+//		System.out.println("整合候选1项集和候选2项集之后的特征集：" + feature.size());
+//		System.out.println(feature);
+//		System.out.println();
 		filterByVerbs();
-		System.out.println("动词过滤后的候选特征集：" + feature.size());
-		System.out.println(feature);
+//		System.out.println("动词过滤后的候选特征集：" + feature.size());
+//		System.out.println(feature);
 		save2File();
 	}
 

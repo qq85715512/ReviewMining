@@ -26,7 +26,7 @@ public class RuleBasedFilter {
 		//List<Sentence> sentences = FileObjectProvider.getDocumentsFromFile(null, false);
 		String wsFileName = FileContant.WS_SENTENCE_FILE;
 		List<Sentence> sentences = FileObjectProvider.getSentencesFromFile(wsFileName);
-		int threshole = 3;
+		int threshole = 5;
 		for (Item item : items) {
 			int count = 0;
 			String element = item.getElementsString();
