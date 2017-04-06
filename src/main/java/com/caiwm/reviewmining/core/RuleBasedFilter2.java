@@ -25,7 +25,10 @@ public class RuleBasedFilter2 {
 	}
 
 	public static void filterBySentiment(Set<Item> items) {
-		List<Sentence> sentences = FileObjectProvider.getDocumentsFromFile(null, false);
+		//TODO
+//		List<Sentence> sentences = FileObjectProvider.getDocumentsFromFile(null, false);
+		String wsFileName = FileContant.WS_SENTENCE_FILE;
+		List<Sentence> sentences = FileObjectProvider.getSentencesFromFile(wsFileName);
 		int threshole = 12;
 		for (Item item : items) {
 			int count = 0;

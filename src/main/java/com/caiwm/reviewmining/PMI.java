@@ -142,9 +142,9 @@ public class PMI {
 			Entry<String, Set<Integer>> entry = iterator.next();
 			String key = entry.getKey();
 			Set<Integer> value = entry.getValue();
-			if (temp1.contains(key) && commendatories.size() < 50 && value.size() > 12) {
+			if (temp1.contains(key) && commendatories.size() < 60 && value.size() > 10) {
 				commendatories.put(key, value);
-			}else if (temp2.contains(key) && derogratories.size() < 50  && value.size() > 4) {
+			}else if (temp2.contains(key) && derogratories.size() < 60  && value.size() > 3) {
 				derogratories.put(key, value);
 			}
 		}

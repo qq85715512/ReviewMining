@@ -23,8 +23,10 @@ public class RuleBasedFilter {
 	}
 	
 	public static void filterBySentiment(Set<Item> items) {
-		List<Sentence> sentences = FileObjectProvider.getDocumentsFromFile(null, false);
-		int threshole = 15;
+		//List<Sentence> sentences = FileObjectProvider.getDocumentsFromFile(null, false);
+		String wsFileName = FileContant.WS_SENTENCE_FILE;
+		List<Sentence> sentences = FileObjectProvider.getSentencesFromFile(wsFileName);
+		int threshole = 3;
 		for (Item item : items) {
 			int count = 0;
 			String element = item.getElementsString();

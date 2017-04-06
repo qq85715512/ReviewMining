@@ -36,6 +36,8 @@ public class FileObjectProvider {
 	private static Set<String> negative = null;
 
 	private static Set<String> positive = null;
+	
+	private static Set<String> manual = null;
 
 	/**
 	 * 加载分词后的评论文件，封装到Sentence列表
@@ -102,6 +104,13 @@ public class FileObjectProvider {
 		return sentences;
 	}
 
+	public static Set<String> getManual() {
+		if (manual == null) {
+			manual = readFile2Set(FileContant.MANUAL_FILE);
+		}
+		return manual;
+	}
+	
 	/**
 	 * 加载停用词
 	 * @return

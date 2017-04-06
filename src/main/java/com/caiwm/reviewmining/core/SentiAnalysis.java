@@ -43,15 +43,20 @@ public class SentiAnalysis {
 			String feature = strs[0];
 			String adv = strs[1];
 			String adj = strs[2];
-			int polar = 0;
+			int polar = -1;
 			if (positive.contains(adj)) {
 				polar = 1;
 			}
-			if (!"".equals(adv) && escape.contains(adv)) {
-				polar *= -1;
-			} else {
-				adv = "";
+			String[] advs = adv.split(",");
+			for (String s : advs) {
+				if (!"".equals(adv) && escape.contains(s)) {
+					polar *= -1;
+					adj = s + adj;
+				} else {
+					adv = "";
+				}
 			}
+			
 			FeatureOpinion featureOpinion = new FeatureOpinion(feature, adv, adj, polar, count);
 			set.add(featureOpinion);
 		}
@@ -69,17 +74,20 @@ public class SentiAnalysis {
 				OpinionCount opinionCount = map.get(feature);
 				String sentiWord = featureOpinion.getSentiWord();
 				int count = featureOpinion.getCount();
-				if (featureOpinion.getPolar() == 0) {
-					opinionCount.getNegative().put(sentiWord, count);
+				int oldCount;
+				if (featureOpinion.getPolar() == -1) {
+					oldCount = opinionCount.getNegative().getOrDefault(sentiWord, 0);
+					opinionCount.getNegative().put(sentiWord, count + oldCount);
 				} else {
-					opinionCount.getPositive().put(sentiWord, count);
+					oldCount = opinionCount.getPositive().getOrDefault(sentiWord, 0);
+					opinionCount.getPositive().put(sentiWord, count + oldCount);
 				}
 				map.put(feature, opinionCount);
 			} else {
 				OpinionCount opinionCount = new OpinionCount();
 				String sentiWord = featureOpinion.getSentiWord();
 				int count = featureOpinion.getCount();
-				if (featureOpinion.getPolar() == 0) {
+				if (featureOpinion.getPolar() == -1) {
 					opinionCount.getNegative().put(sentiWord, count);
 				} else {
 					opinionCount.getPositive().put(sentiWord, count);

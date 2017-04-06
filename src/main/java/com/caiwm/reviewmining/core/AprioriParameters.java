@@ -80,6 +80,9 @@ public class AprioriParameters {
 			List<Word> words = sentence.getWords();
 			Set<String> items = new HashSet<String>();
 			for (Word word : words) {
+				if (word.getContent().matches("[0-9a-zA-Z]+")) {
+					continue;
+				}
 				if (nounFlag.contains(word.getPos()) && word.getContent().trim().length() > 1) {
 					items.add(word.getContent());
 					if ("v".equals(word.getPos())) {

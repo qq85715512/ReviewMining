@@ -24,7 +24,9 @@ public class OpinionMine2 {
 	private static Map<String, Set<Integer>> adjMap = new HashMap<String, Set<Integer>>();
 
 	public static void mineOpinion(Set<Item> featureItems) {
-		List<Sentence> sentences = FileObjectProvider.getDocumentsFromFile(null, false);
+//		List<Sentence> sentences = FileObjectProvider.getDocumentsFromFile(null, false);
+		String wsFileName = FileContant.WS_SENTENCE_FILE;
+		List<Sentence> sentences = FileObjectProvider.getSentencesFromFile(wsFileName);
 		for (Item item : featureItems) {
 			String feature = item.getElementsString();
 			Set<Integer> sentenceNo = item.getSentenceNo();
