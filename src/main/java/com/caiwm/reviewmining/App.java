@@ -17,6 +17,7 @@ import com.caiwm.reviewmining.common.FileObjectProvider;
 import com.caiwm.reviewmining.core.Apriori;
 import com.caiwm.reviewmining.core.AprioriParameters;
 import com.caiwm.reviewmining.core.Evaluate;
+import com.caiwm.reviewmining.core.OpinionMine;
 import com.caiwm.reviewmining.core.OpinionMine2;
 import com.caiwm.reviewmining.core.RuleBasedFilter;
 import com.caiwm.reviewmining.core.SentiAnalysis;
@@ -24,14 +25,14 @@ import com.caiwm.reviewmining.core.SentiAnalysis;
 public class App {
 	public static void main(String[] args) {
 
-		// iphone6
-		// mi4
-		// samsungS6
-		FileContant.setProduct("samsungS6");
+		// iphone6 threshole = 10
+		// mi4 threshole = 8
+		// samsungS6 threshole = 5
+		FileContant.setProduct("mi4");
 
 		// 利用Apriori算法初步挖掘特征，得到特征集F1
 		AprioriParameters parameters = new AprioriParameters();
-		parameters.setUp(0.005F);
+		parameters.setUp(0.006F);
 		Apriori apriori = new Apriori(parameters);
 		apriori.genFeature();
 
@@ -52,9 +53,9 @@ public class App {
 		Set<String> manual = FileObjectProvider.getManual();
 		Evaluate.evaluateFeatureMining(result, manual);
 
-		OpinionMine2.mineOpinion(feature);
+		OpinionMine.mineOpinion(feature);
 
-		Map<String, Set<Integer>> featureOpinion = OpinionMine2.getFeatureOpnion();
+		Map<String, Set<Integer>> featureOpinion = OpinionMine.getFeatureOpnion();
 		System.out.println(featureOpinion);
 		System.out.println(featureOpinion.size());
 		createInputFile(featureOpinion);

@@ -42,6 +42,8 @@ public class PMI {
 	
 	private static Set<String> positive = new HashSet<String>();
 	
+	private static Set<String> middle = new HashSet<String>();
+	
 	public static Set<String> getNegative(){
 		return negative;
 	}
@@ -50,8 +52,143 @@ public class PMI {
 		return positive;
 	}
 	
+	
+	
+	private static void union() {
+		Set<String> temp1 = new HashSet<String>();
+		Set<String> temp2 = new HashSet<String>();
+		commendatories = new HashMap<String, Set<Integer>>();
+		derogratories = new HashMap<String, Set<Integer>>();
+		
+		temp1 = hCommendatories;
+		temp2 = hDerogratories;
+		temp1.addAll(cCommendatories);
+		temp2.addAll(cDerogratories);
+		Set<String> target = sentiWordsOfCorpus.keySet();
+		temp1.retainAll(target);
+		temp2.retainAll(target);
+		
+		Iterator<Entry<String, Set<Integer>>> iterator = sentiWordsOfCorpus.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<String, Set<Integer>> entry = iterator.next();
+			String key = entry.getKey();
+			Set<Integer> value = entry.getValue();
+			if (temp1.contains(key) && commendatories.size() < 100) {
+				commendatories.put(key, value);
+			}else if (temp2.contains(key) && derogratories.size() < 100) {
+				derogratories.put(key, value);
+			}
+		}
+	}
+	
+	private static void classify() {
+		Iterator<Entry<String, Set<Integer>>> iterator = adjMap.entrySet().iterator();
+		Set<String> goodKey = commendatories.keySet();
+		Set<String> badKey = derogratories.keySet();
+		while (iterator.hasNext()) {
+			Entry<String, Set<Integer>> entry = iterator.next();
+			String key = entry.getKey();
+			Set<Integer> value = entry.getValue();
+			if (goodKey.contains(key)) {
+				positive.add(key);
+			} else if (badKey.contains(key)) {
+				negative.add(key);
+			} 
+			else {
+				calculatePolar(key, value);
+			}
+		}
+	}
+	
+	private static void calculatePolar(String key, Set<Integer> value) {
+		int keyFreq = value.size();
+		float pos = 0;
+		float neg = 0;
+		Iterator<Entry<String, Set<Integer>>> iterator1 = commendatories.entrySet().iterator();
+		pos = calculate(keyFreq, value, iterator1);
+		Iterator<Entry<String, Set<Integer>>> iterator2 = derogratories.entrySet().iterator();
+		neg = calculate(keyFreq, value, iterator2);
+		if (pos > neg) {
+			positive.add(key);
+		} else if (pos < neg){
+			negative.add(key);
+		} else {
+			middle.add(key);
+		}
+	}
+
+	private static float calculate(int keyFreq, Set<Integer> value, Iterator<Entry<String, Set<Integer>>> iterator) {
+		float result = 0;
+		while (iterator.hasNext()) {
+			Entry<String, Set<Integer>> entry = iterator.next();
+			Set<Integer> value1 = entry.getValue();
+			Set<Integer> value2 = new HashSet<Integer>(value1);
+			value2.retainAll(value);
+			if (!value2.isEmpty()) {
+				int key1Freq = value1.size();
+				int conOcurrFreq = value2.size();
+				result += conOcurrFreq / (keyFreq * key1Freq * 1.0);
+			}
+		}
+		return result;
+	}
+
+	private static Set<String> getLexiconFromFile (String pathName) {
+		Set<String> result = new HashSet<String>();
+		File positive = new File(pathName);
+		try {
+			FileReader fr = new FileReader(positive);
+			BufferedReader br = new BufferedReader(fr);
+			String line = "";
+			while ((line = br.readLine()) != null) {
+				result.add(line);
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	private static void save2File() {
+		String fileName = FileContant.RESULT_POLAR_FILE;
+		File result = new File(fileName);
+		try {
+			FileWriter fw = new FileWriter(result);
+			Iterator<String> positr = positive.iterator();
+			Iterator<String> negitr = negative.iterator();
+			Iterator<String> miditr = middle.iterator();
+			fw.write("情感词共有:"+ adjMap.size() +"个\n");
+			fw.write("positive:"+ positive.size() +"个\n");
+			while (positr.hasNext()) {
+				String line = positr.next();
+				fw.write(line);
+				fw.write("\n");
+				fw.flush();
+			}
+			fw.write("negative:" + negative.size() + "个\n");
+			while (negitr.hasNext()) {
+				String line = negitr.next();
+				fw.write(line);
+				fw.write("\n");
+				fw.flush();
+			}
+			fw.write("未归类:" + middle.size() + "个\n");
+			while (miditr.hasNext()) {
+				String line = miditr.next();
+				fw.write(line);
+				fw.write("\n");
+				fw.flush();
+			}
+			fw.close();
+		} catch (IOException e) {
+			throw new RuntimeException("没有找到此文件...");
+		}
+	}
 	static {
-//		FileContant.setProduct("iphone6");
+		FileContant.setProduct("mi4");
 		sentiWordsOfCorpus = new HashMap<String, Set<Integer>>();
 		String path = FileContant.SENTIMENT_WORDS_FILE;
 		File sentiWords = new File(path);
@@ -122,130 +259,6 @@ public class PMI {
 		save2File();
 	}
 
-	
-	private static void union() {
-		Set<String> temp1 = new HashSet<String>();
-		Set<String> temp2 = new HashSet<String>();
-		commendatories = new HashMap<String, Set<Integer>>();
-		derogratories = new HashMap<String, Set<Integer>>();
-		
-		temp1 = hCommendatories;
-		temp2 = hDerogratories;
-		temp1.addAll(cCommendatories);
-		temp2.addAll(cDerogratories);
-		Set<String> target = sentiWordsOfCorpus.keySet();
-		temp1.retainAll(target);
-		temp2.retainAll(target);
-		
-		Iterator<Entry<String, Set<Integer>>> iterator = sentiWordsOfCorpus.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Entry<String, Set<Integer>> entry = iterator.next();
-			String key = entry.getKey();
-			Set<Integer> value = entry.getValue();
-			if (temp1.contains(key) && commendatories.size() < 60 && value.size() > 10) {
-				commendatories.put(key, value);
-			}else if (temp2.contains(key) && derogratories.size() < 60  && value.size() > 3) {
-				derogratories.put(key, value);
-			}
-		}
-	}
-	
-	private static void classify() {
-		Iterator<Entry<String, Set<Integer>>> iterator = adjMap.entrySet().iterator();
-		Set<String> goodKey = commendatories.keySet();
-		Set<String> badKey = derogratories.keySet();
-		while (iterator.hasNext()) {
-			Entry<String, Set<Integer>> entry = iterator.next();
-			String key = entry.getKey();
-			Set<Integer> value = entry.getValue();
-			if (goodKey.contains(key)) {
-				positive.add(key);
-			} else if (badKey.contains(key)) {
-				negative.add(key);
-			} 
-			else {
-				calculatePolar(key, value);
-			}
-		}
-	}
-	
-	private static void calculatePolar(String key, Set<Integer> value) {
-		int keyFreq = value.size();
-		float pos = 0;
-		float neg = 0;
-		Iterator<Entry<String, Set<Integer>>> iterator1 = commendatories.entrySet().iterator();
-		pos = calculate(keyFreq, value, iterator1);
-		Iterator<Entry<String, Set<Integer>>> iterator2 = derogratories.entrySet().iterator();
-		neg = calculate(keyFreq, value, iterator2);
-		if (pos > neg) {
-			positive.add(key);
-		} else {
-			negative.add(key);
-		}
-	}
-
-	private static float calculate(int keyFreq, Set<Integer> value, Iterator<Entry<String, Set<Integer>>> iterator) {
-		float result = 0;
-		while (iterator.hasNext()) {
-			Entry<String, Set<Integer>> entry = iterator.next();
-			Set<Integer> value1 = entry.getValue();
-			Set<Integer> value2 = new HashSet<Integer>(value1);
-			value2.retainAll(value);
-			if (!value2.isEmpty()) {
-				int key1Freq = value1.size();
-				int conOcurrFreq = value2.size();
-				result += conOcurrFreq / (keyFreq * key1Freq * 1.0);
-			}
-		}
-		return result;
-	}
-
-	private static Set<String> getLexiconFromFile (String pathName) {
-		Set<String> result = new HashSet<String>();
-		File positive = new File(pathName);
-		try {
-			FileReader fr = new FileReader(positive);
-			BufferedReader br = new BufferedReader(fr);
-			String line = "";
-			while ((line = br.readLine()) != null) {
-				result.add(line);
-			}
-			br.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	
-	private static void save2File() {
-		String fileName = FileContant.RESULT_POLAR_FILE;
-		File result = new File(fileName);
-		try {
-			FileWriter fw = new FileWriter(result);
-			Iterator<String> positr = positive.iterator();
-			Iterator<String> negitr = negative.iterator();
-			fw.write("positive:"+ positive.size() +"个\n");
-			while (positr.hasNext()) {
-				String line = positr.next();
-				fw.write(line);
-				fw.write("\n");
-				fw.flush();
-			}
-			fw.write("negative:" + negative.size() + "个\n");
-			while (negitr.hasNext()) {
-				String line = negitr.next();
-				fw.write(line);
-				fw.write("\n");
-				fw.flush();
-			}
-			fw.close();
-		} catch (IOException e) {
-			throw new RuntimeException("没有找到此文件...");
-		}
-	}
-	
 	public static void main(String[] args) {
 		System.out.println(PMI.sentiWordsOfCorpus);
 		System.out.println(PMI.commendatories.size());
@@ -254,8 +267,10 @@ public class PMI {
 		System.out.println(PMI.adjMap.size());
 		System.out.println(PMI.positive);
 		System.out.println(PMI.negative);
+		System.out.println(middle);
 		System.out.println(PMI.positive.size());
 		System.out.println(PMI.negative.size());
+		System.out.println(middle.size());
 //		System.out.println(hCommendatories);
 //		System.out.println(hDerogratories);
 	}
