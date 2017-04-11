@@ -64,19 +64,8 @@ public class Apriori {
 
 		feature.addAll(candidate1Item);
 		feature.addAll(candidate2Item);
-//		feature.addAll(candidate3Item);
-//		System.out.println("候选1项集组成的特征：" + candidate1Item.size());
-//		System.out.println(candidate1Item);
-//		System.out.println();
-//		System.out.println("候选2项集组成的特征：" + candidate2Item.size());
-//		System.out.println(candidate2Item);
-//		System.out.println();
-//		System.out.println("整合候选1项集和候选2项集之后的特征集：" + feature.size());
-//		System.out.println(feature);
-//		System.out.println();
 		filterByVerbs();
-//		System.out.println("动词过滤后的候选特征集：" + feature.size());
-//		System.out.println(feature);
+		fileterByCommonWords();
 		save2File();
 	}
 
@@ -91,6 +80,18 @@ public class Apriori {
 		}
 	}
 
+	private void fileterByCommonWords() {
+		Set<String> commonWords = FileObjectProvider.getCommonWords();
+		Iterator<Item> iterator = feature.iterator();
+		while (iterator.hasNext()) {
+			Item item = iterator.next();
+			String element = item.getElementsString();
+			if (commonWords.contains(element)) {
+				iterator.remove();
+			}
+		}
+	}
+	
 	/**
 	 * 扫描事务数据库，计算频繁1-项集
 	 * 
@@ -288,13 +289,6 @@ public class Apriori {
 			Item item2 = new Item(txDatabaseCount);
 			item2.getElements().add(newElement);
 			item2.getSentenceNo().addAll(newSentenceNo);
-//			Float suport = item2.getSuport();
-			//这里仍然采用支持度来过滤组合名词
-//			if (suport > minSup) {
-//				itemsAfterTrim.add(item2);
-//				updateCandidate1Item(suport, elements, newSentenceNo);
-//				updateSentences(newElement, elements, newSentenceNo, sentences);
-//			}
 			itemsAfterTrim.add(item2);
 			updateCandidate1Item(elements, newSentenceNo);
 			updateSentences(newElement, elements, newSentenceNo, sentences);

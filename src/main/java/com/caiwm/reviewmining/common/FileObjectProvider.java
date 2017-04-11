@@ -38,6 +38,8 @@ public class FileObjectProvider {
 	private static Set<String> positive = null;
 	
 	private static Set<String> manual = null;
+	
+	private static Set<String> common_words = null;
 
 	/**
 	 * 加载分词后的评论文件，封装到Sentence列表
@@ -177,6 +179,13 @@ public class FileObjectProvider {
 		return positive;
 	}
 
+	public static Set<String> getCommonWords() {
+		if (common_words == null) {
+			common_words = readFile2Set(FileContant.COMMON_WORDS);
+		}
+		return common_words;
+	}
+	
 	/**
 	 * 按行读取文件，将每行的内容加载到集合中
 	 * @param fileName
@@ -187,8 +196,8 @@ public class FileObjectProvider {
 		try {
 			FileReader fr = new FileReader(fileName);
 			BufferedReader br = new BufferedReader(fr);
-			String line = "";
-			while ((line = br.readLine()) != null && line.trim() != "") {
+			String line = null;
+			while ((line = br.readLine()) != null && (line = line.trim()) != "") {
 				set.add(line);
 			}
 			br.close();

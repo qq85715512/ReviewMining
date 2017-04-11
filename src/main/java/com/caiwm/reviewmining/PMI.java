@@ -73,9 +73,9 @@ public class PMI {
 			Entry<String, Set<Integer>> entry = iterator.next();
 			String key = entry.getKey();
 			Set<Integer> value = entry.getValue();
-			if (temp1.contains(key) && commendatories.size() < 100) {
+			if (temp1.contains(key) && commendatories.size() < 160) {
 				commendatories.put(key, value);
-			}else if (temp2.contains(key) && derogratories.size() < 100) {
+			}else if (temp2.contains(key) && derogratories.size() < 160) {
 				derogratories.put(key, value);
 			}
 		}
@@ -188,7 +188,7 @@ public class PMI {
 		}
 	}
 	static {
-		FileContant.setProduct("mi4");
+//		FileContant.setProduct("mi4");
 		sentiWordsOfCorpus = new HashMap<String, Set<Integer>>();
 		String path = FileContant.SENTIMENT_WORDS_FILE;
 		File sentiWords = new File(path);

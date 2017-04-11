@@ -44,6 +44,7 @@ public class FileContant {
 	public static String NEGATIVE_COMMENT_FILE = "files/lexicon/n.txt";
 	public static String POSITICE_FILE = "files/lexicon/positive.txt";
 	public static String NEGATIVE_FILE = "files/lexicon/negative.txt";
+	public static String COMMON_WORDS = "files/common_words.txt";
 	
 	public static void setProduct(String product) {
 		CORPUS_FILE = CORPUS_PREFIX + product + CORPUS_SUFFIX;

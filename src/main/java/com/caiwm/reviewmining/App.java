@@ -18,21 +18,20 @@ import com.caiwm.reviewmining.core.Apriori;
 import com.caiwm.reviewmining.core.AprioriParameters;
 import com.caiwm.reviewmining.core.Evaluate;
 import com.caiwm.reviewmining.core.OpinionMine;
-import com.caiwm.reviewmining.core.OpinionMine2;
 import com.caiwm.reviewmining.core.RuleBasedFilter;
 import com.caiwm.reviewmining.core.SentiAnalysis;
 
 public class App {
 	public static void main(String[] args) {
 
-		// iphone6 threshole = 10
-		// mi4 threshole = 8
-		// samsungS6 threshole = 5
+		// iphone6 threshole = 10 minSup = 0.004
+		// mi4 threshole = 5 minSup = 0.005
+		// samsungS6 threshole = 5 minSup = 0.004
 		FileContant.setProduct("mi4");
 
 		// 利用Apriori算法初步挖掘特征，得到特征集F1
 		AprioriParameters parameters = new AprioriParameters();
-		parameters.setUp(0.006F);
+		parameters.setUp(0.005F);
 		Apriori apriori = new Apriori(parameters);
 		apriori.genFeature();
 
